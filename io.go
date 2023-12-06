@@ -8,6 +8,9 @@ import (
 
 // 此处记录输入输出的模板
 // codeforces模板
+// func init() { debug.SetGCPercent(-1) } // 关闭垃圾收集
+
+// 一般来说使用如下读取方法的速度几乎可以应对绝大部分的题目，因为go本身的速度也较为不错
 
 func Cf_01_A() {
 	in := bufio.NewReader(os.Stdin)
