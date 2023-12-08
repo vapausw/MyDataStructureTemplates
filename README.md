@@ -11,10 +11,13 @@
 
 **[单调栈 monotone_stack.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/monotone_stack.go)**
 
-**[单调队列 monotone_queue.fo](https://github.com/vapausw/MyDataStructureTemplates/blob/test/monotone_queue.go)**
+**[单调队列 monotone_queue.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/monotone_queue.go)**
 
 **[并查集 UnionFind.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/UnionFind.go)**
 
+**[跳表 sparseTable.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/sparseTable.go)**
+
+**[树状数组 fenwick.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/fenwick.go)**
 ****
 ## 代码参考
 **[go语言代码多参考于灵神的代码模板](https://github.com/EndlessCheng/codeforces-go)**
