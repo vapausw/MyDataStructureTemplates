@@ -21,6 +21,8 @@
 **[跳表 sparseTable.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/sparseTable.go)**
 
 **[树状数组 fenwick.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/fenwick.go)**
+
+**[线段树 segmentTree.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/segmentTree.go)**
 ****
 ## 代码参考
 **[go语言代码多参考于灵神的代码模板](https://github.com/EndlessCheng/codeforces-go)**

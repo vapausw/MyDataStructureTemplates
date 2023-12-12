@@ -47,7 +47,7 @@ func TestLazySegmentTree(t *testing.T) {
 		t.Errorf("Expected initial sum of lazy segment tree to be 110, got %v", lst[1].val)
 	}
 
-	// 测试区间更新和查询,此处默认查询区间未1 <= l <= r <= n，但数组a是从0开始的
+	// 测试区间更新和查询,此处默认查询区间为1 <= l <= r <= n，但数组a是从0开始的
 	lst.update(1, 1, 5, 10)   // 区间[1, 5]每个元素增加10
 	sum := lst.query(1, 1, 5) // 查询的是前5元素的和
 	if sum != 80 {
