@@ -30,4 +30,8 @@ func (st ST) Query(l, r int) int {
 }
 
 // Op 此处维护最大值，最小值，或者gcd
-func (st ST) Op(int, int) (_ int) { return }
+// 当前此处维护最大值
+func (st ST) Op(a, b int) (res int) {
+	res = max(a, b)
+	return
+}

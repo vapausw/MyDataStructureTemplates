@@ -1,4 +1,7 @@
 # 本项目存储一些自己所用的数据结构代码模板
+****
+**此数据结构基于go 1.21版本，对于每个数据结构基本都实现了对应的测试函数，如果有具体题目实现就不再进行测试，如单调栈与单调队列**
+****
 ## 目录
 ****
 **[个人做题技巧总结 TopicSkills.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/TopicSkills.go)**
