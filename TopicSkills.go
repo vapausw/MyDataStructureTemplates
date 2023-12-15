@@ -113,3 +113,46 @@ func Cf_913_C() {
 		Fprintln(out, ans)
 	}
 }
+
+// 题目链接 https://leetcode.cn/problems/stamping-the-grid/?envType=daily-question&envId=2023-12-14
+// 此题目所使用的技巧为二维前缀和与二维差分数组
+// 此解题方法参考 https://leetcode.cn/problems/stamping-the-grid/solutions/1199642/wu-nao-zuo-fa-er-wei-qian-zhui-he-er-wei-zwiu/?envType=daily-question&envId=2023-12-14
+func possibleToStamp(grid [][]int, stampHeight int, stampWidth int) bool {
+	m, n := len(grid), len(grid[0])
+	pre := make([][]int, m+1)
+	pre[0] = make([]int, n+1)
+	// 求二维前缀和
+	for i, row := range grid {
+		pre[i+1] = make([]int, n+1)
+		for j, v := range row {
+			pre[i+1][j+1] = pre[i][j+1] + pre[i+1][j] - pre[i][j] + v
+		}
+	}
+	// 二维差分数组,此处多两列为了后面还原计算方便
+	diff := make([][]int, m+2)
+	for i := range diff {
+		diff[i] = make([]int, n+2)
+	}
+	for i2 := stampHeight; i2 <= m; i2++ {
+		for j2 := stampWidth; j2 <= n; j2++ {
+			j1 := j2 - stampWidth + 1
+			i1 := i2 - stampHeight + 1
+			if pre[i2][j2]-pre[i2][j1-1]-pre[i1-1][j2]+pre[i1-1][j1-1] == 0 { // 当前矩形可以放置邮票
+				diff[i1][j1]++
+				diff[i1][j2+1]--
+				diff[i2+1][j1]--
+				diff[i2+1][j2+1]++
+			}
+		}
+	}
+	// 二维前缀和进行还原差分数组
+	for i, row := range grid {
+		for j, v := range row {
+			diff[i+1][j+1] += diff[i+1][j] + diff[i][j+1] - diff[i][j]
+			if v == 0 && diff[i+1][j+1] == 0 {
+				return false
+			}
+		}
+	}
+	return true
+}
