@@ -156,3 +156,78 @@ func possibleToStamp(grid [][]int, stampHeight int, stampWidth int) bool {
 	}
 	return true
 }
+
+// 题目链接 https://codeforces.com/contest/1914/problem/F
+/*
+题目描述：
+BerSoft 是伯兰最大的 IT 公司。BerSoft 公司有 n 名员工，编号从 1 到 n 。
+
+第一名员工是公司负责人，他没有任何上级。其他每个员工 i都有一个直接上级 pi;
+
+如果以下条件之一成立，则认为员工 x是员工y 的上级(直接或间接)：
+
+- 员工 x 是员工 y的直接上级；
+- 员工 x 是员工 y的直接上级的上级。
+
+BerSoft 的组织结构是，公司领导是每位员工的上级。
+
+即将举行编程比赛。为此应成立两人小组。但是，如果团队中的一名员工是另一名员工的上级，他们在一起就会很不自在。因此，应建立两人小组，这样就不会出现谁比谁高一等的情况。注意，任何员工都不能参加一个以上的团队。
+
+你的任务是根据上述规则计算出团队的最大可能数量。
+*/
+// 学习灵神CF 916 F 的思路
+// 对其分为两种情况，（1）当前根节点下的子树节点最大值不超过子树节点值和的一半， 这种可以直接算答案
+// （2） 当前根节点下的子树节点最大值超过子树节点值和的一半， 取其与子树的节点与最大值的节点合并为一组，然后这个最大值节点上的子树就全部挂到了根，这样会慢慢将其转换为第一种情况
+// 如此该问题就得解了
+
+func Cf_916_F() {
+	in := bufio.NewReader(os.Stdin)
+	out := bufio.NewWriter(os.Stdout)
+	defer out.Flush()
+	var t, n, v int
+	for Fscan(in, &t); t > 0; t-- {
+		Fscan(in, &n)
+		g := make([][]int, n)
+		for i := 1; i < n; i++ {
+			Fscan(in, &v)
+			v-- // 将节点值保证在0——n之间
+			g[v] = append(g[v], i)
+		}
+		size := make([]int, n) // 记录子节点的数量
+		var initSize func(int)
+		initSize = func(x int) {
+			size[x] = 1
+			for i, y := range g[x] {
+				initSize(y)
+				size[x] += size[y]
+				if size[y] > size[g[x][0]] { // 保证最左边是节点树最多的子树，方便后续处理
+					g[x][0], g[x][i] = g[x][i], g[x][0]
+				}
+			}
+		}
+		initSize(0)
+
+		ans, other, x := 0, 0, 0
+		for {
+			if other > 0 { // 此处的目的是将x的根与other进行组合也算为一种方案
+				ans++
+				other--
+			}
+			if len(g[x]) == 0 {
+				break
+			}
+
+			s := size[x] - 1
+			y := g[x][0]
+
+			if size[y]*2 <= s+other { // 满足第一种情况
+				ans += (s + other) / 2
+				break
+			}
+			// 不满足，开始转化
+			other += s - size[y]
+			x = y
+		}
+		Fprintln(out, ans)
+	}
+}
