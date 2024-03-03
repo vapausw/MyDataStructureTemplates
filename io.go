@@ -8,6 +8,8 @@ import (
 	"math"
 	"os"
 	"runtime/debug"
+	"slices"
+	"sort"
 )
 
 func init() { debug.SetGCPercent(-1) } // 关闭垃圾收集
@@ -100,6 +102,17 @@ func C(n, m int) int { // 计算组合数方法二
 
 func log(a, b int) float64 { //以a为底的对数求取
 	return math.Log(float64(b)) / math.Log(float64(a))
+}
+
+func discretization(a []int) []int { // 将数组中的数据离散化，返回的是该位置的值实际应当位于何处,方便使用树状数组等数据结构
+	res := make([]int, len(a))
+	b := make([]int, len(a))
+	copy(b, a)
+	slices.Sort(b)
+	for i, v := range a {
+		res[i] = sort.SearchInts(b, v) + 1 // 注意这里的 +1,因为树状数组的下标需要为正
+	}
+	return res // 返回的是离散化后的数组
 }
 
 func main() {
