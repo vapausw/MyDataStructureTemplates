@@ -10,7 +10,7 @@ type node struct { // 存储图中的节点信息，存储当前的节点值，�
 	index, value int
 }
 type Graph struct {
-	graph               [][]node // 存储图一般存储相连的便即可, 并且将自己的信息存储到第一个节点，例如1相连的边为2， 3， 4，那么g[1] = {2, 3, 4}
+	graph               [][]node // 存储图一般存储相连的便即可，例如1相连的边为2， 3， 4，那么g[1] = {2, 3, 4}
 	inDegree, outDegree []int    // 存储当前节点的入度和出度
 }
 
@@ -72,8 +72,14 @@ func (g *Graph) Toposort() (res []int) { // 返回拓扑排序结果，如果为
 		}
 	}
 	for !q.Empty() {
-		u := q.Pop().(int)
-		res = append(res, u)
+		x := q.Pop().(int)
+		res = append(res, x)
+		for _, y := range g.graph[x] {
+			in[y.index]--
+			if in[y.index] == 0 {
+				q.Push(y.index)
+			}
+		}
 	}
 	if len(res) == n {
 		return
