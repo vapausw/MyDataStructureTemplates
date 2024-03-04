@@ -231,3 +231,65 @@ func Cf_916_F() {
 		Fprintln(out, ans)
 	}
 }
+
+// cf 929 F, 题目链接 https://codeforces.com/contest/1933/problem/F
+// 根据机器人与终点位置不动的相对思想去进行解题
+// 将问题进行简化，如果石头动，可能无法解决
+// 同时学习了循环位置处的dp状态转移方程的解法
+
+func Cf_929_F() {
+	in := bufio.NewReader(os.Stdin)
+	out := bufio.NewWriter(os.Stdout)
+	defer out.Flush()
+
+	var t int
+	for Fscan(in, &t); t > 0; t-- {
+		inf := int(1e9)
+		var n, m int
+		Fscan(in, &n, &m)
+		a := make([][]int, n)
+		dp := make([][]int, n)
+		for i := range a {
+			a[i] = make([]int, m)
+			dp[i] = make([]int, m+1)
+			for j := range dp[i] {
+				dp[i][j] = inf
+			}
+		}
+		for i := range a {
+			for j := range a[i] {
+				Fscan(in, &a[i][j])
+			}
+		}
+		ans := inf
+		dp[0][1] = 0
+		for i := 1; i <= m; i++ {
+			for j := 0; j < n; j++ {
+				if a[j][i-1] == 1 {
+					continue
+				}
+				dp[j][i] = min(dp[j][i], dp[(j-1+n)%n][i-1]+1) // 人向右走根据相对位移是向右下走的
+			}
+			for j := 0; j < 3*n; j++ {
+				if a[j%n][i-1] == 1 || a[(j-1+n)%n][i-1] == 1 {
+					continue
+				}
+				dp[j%n][i] = min(dp[j%n][i], dp[(j-2+n)%n][i]+1) // 人向下走相对运动是下走两步
+			}
+		}
+		for i := 0; i < n; i++ {
+			if dp[i][m] == inf {
+				continue
+			}
+			npos := (n - 1 + dp[i][m]) % n // 终点位置最终所在位置
+			if npos < i {
+				npos += n
+			}
+			ans = min(ans, dp[i][m]+min(npos-i, n-(npos-i)))
+		}
+		if ans == inf {
+			ans = -1
+		}
+		Fprintln(out, ans)
+	}
+}
