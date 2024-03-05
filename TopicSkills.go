@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"container/heap"
 	. "fmt"
 	"os"
 )
@@ -291,5 +292,61 @@ func Cf_929_F() {
 			ans = -1
 		}
 		Fprintln(out, ans)
+	}
+}
+
+// leetcode每日一题， 题目链接 https://leetcode.cn/problems/number-of-ways-to-arrive-at-destination/?envType=daily-question&envId=2024-03-05
+// 比较特别的思路就是记录更新最短路径的次数，其余的就是正常的迪杰斯特拉算法
+
+// 自定义类型堆
+type pair struct {
+	dis, x int
+}
+type hp []pair
+
+func (h hp) Len() int           { return len(h) }
+func (h hp) Less(i, j int) bool { return h[i].dis < h[j].dis } // > 为最大堆
+func (h hp) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+func (h *hp) Push(v any)        { *h = append(*h, v.(pair)) }
+func (h *hp) Pop() any          { a := *h; v := a[len(a)-1]; *h = a[:len(a)-1]; return v }
+func countPaths(n int, roads [][]int) int {
+	type edge struct{ to, wt int }
+	g := make([][]edge, n)
+	for _, e := range roads {
+		x, y, wt := e[0], e[1], e[2]
+		g[x] = append(g[x], edge{y, wt})
+		g[y] = append(g[y], edge{x, wt})
+	}
+	const (
+		mod int = 1e9 + 7
+		inf int = 1e12 + 7
+	)
+	dist := make([]int, n)
+	for i := 1; i < n; i++ {
+		dist[i] = inf
+	}
+	f := make([]int, n)
+	f[0] = 1 // 自己到自己只有一个
+	h := hp{{}}
+	for {
+		p := heap.Pop(&h).(pair)
+		x := p.x
+		if x == n-1 {
+			return f[n-1]
+		}
+		if p.dis > dist[x] {
+			continue
+		}
+		for _, e := range g[x] {
+			y := e.to
+			newDis := p.dis + e.wt
+			if newDis < dist[y] {
+				dist[y] = newDis
+				f[y] = f[x]
+				heap.Push(&h, pair{newDis, y})
+			} else if newDis == dist[y] {
+				f[y] = (f[y] + f[x]) % mod
+			}
+		}
 	}
 }
