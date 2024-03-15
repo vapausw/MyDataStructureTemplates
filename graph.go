@@ -1,9 +1,14 @@
 package main
 
+import (
+	"container/heap"
+	"math"
+)
+
 //此文档用于记录有关于图的一些常用算法
 
 const (
-	inf int = 1e9 // 极大值
+	inf int = math.MaxInt >> 1 // 极大值
 )
 
 type node struct { // 存储图中的节点信息，存储当前的节点值，以及与其相连的边权值
@@ -86,4 +91,120 @@ func (g *Graph) Toposort() (res []int) { // 返回拓扑排序结果，如果为
 	} else {
 		return []int{}
 	}
+}
+
+// DAG, dp求单源最短路以及最长路,时间复杂度O(n + m)
+
+func (g *Graph) Dagdp(x int) (min_dis []int, max_dis []int) { //以x为起点的最短路和最长路
+	topo := g.Toposort()
+	min_dis = make([]int, len(g.graph))
+	max_dis = make([]int, len(g.graph))
+	for i := range min_dis {
+		min_dis[i] = inf
+	}
+	min_dis[x] = 0
+	for _, u := range topo {
+		for _, y := range g.graph[u] {
+			min_dis[y.index] = min(min_dis[y.index], min_dis[u]+y.value)
+			max_dis[y.index] = max(max_dis[y.index], max_dis[u]+y.value)
+		}
+	}
+	return min_dis, max_dis
+}
+
+// 最短路算法，floyd算法，时间复杂度O(n^3)
+
+func (g *Graph) Floyd() [][]int {
+	n := len(g.graph)
+	f := make([][]int, n)
+	for i := range f {
+		f[i] = make([]int, n)
+		for j := range f[i] {
+			f[i][j] = inf
+		}
+	}
+	for i := 0; i < n; i++ {
+		for j := 0; j < len(g.graph[i]); j++ {
+			f[i][g.graph[i][j].index] = g.graph[i][j].value
+			f[g.graph[i][j].index][i] = g.graph[i][j].value // 有向图将这行注释即可
+		}
+	}
+	for k := 0; k < n; k++ {
+		for x := 0; x < n; x++ {
+			for y := 0; y < n; y++ {
+				f[x][y] = min(f[x][y], f[x][k]+f[k][y])
+			}
+		}
+	}
+	return f
+}
+
+// 最短路算法，dijkstra算法，时间复杂度O(n^2 * log(n))，此处最短路时任意两点之间的最短路
+
+func (gr *Graph) Dijkstra() (ans [][]int) {
+	const inf int = 1e9 + 7
+	n := len(gr.graph)
+	dist := make([]int, n)
+	g := make([][]pair, n)
+	for i := range gr.graph {
+		for j := range gr.graph[i] {
+			g[i] = append(g[i], pair{gr.graph[i][j].index, gr.graph[i][j].value})
+			g[gr.graph[i][j].index] = append(g[gr.graph[i][j].index], pair{i, gr.graph[i][j].value})
+		}
+	}
+	dijkstra := func(u int) []int { //朴素的dijkstra
+		for i := range dist {
+			dist[i] = inf
+		}
+		h := hp{}
+		heap.Push(&h, pair{u, 0})
+		for h.Len() > 0 {
+			p := heap.Pop(&h).(pair)
+			if dist[p.i] < inf {
+				continue
+			}
+			dist[p.i] = p.v
+			for _, p1 := range g[p.i] {
+				if dist[p1.i] == inf {
+					heap.Push(&h, pair{p1.i, p1.v + p.v})
+				}
+			}
+		}
+		return dist
+	}
+	for i := 0; i < n; i++ {
+		ans = append(ans, dijkstra(i))
+	}
+	return
+}
+
+type pair struct {
+	i, v int
+}
+
+type hp []pair
+
+func (h *hp) Len() int {
+	return len(*h)
+}
+
+func (h *hp) Less(i, j int) bool {
+	a := *h
+	return a[i].v < a[j].v
+}
+
+func (h *hp) Swap(i, j int) {
+	a := *h
+	a[i], a[j] = a[j], a[i]
+}
+
+func (h *hp) Push(x any) {
+	*h = append(*h, x.(pair))
+}
+
+func (h *hp) Pop() any {
+	a := *h
+	v := a[len(a)-1]
+	*h = a[:len(a)-1]
+	return v
 }

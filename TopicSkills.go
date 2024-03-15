@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"container/heap"
 	. "fmt"
 	"os"
 )
@@ -299,54 +298,93 @@ func Cf_929_F() {
 // 比较特别的思路就是记录更新最短路径的次数，其余的就是正常的迪杰斯特拉算法
 
 // 自定义类型堆
-type pair struct {
-	dis, x int
-}
-type hp []pair
+//type pair struct {
+//	dis, x int
+//}
+//type hp []pair
+//
+//func (h hp) Len() int           { return len(h) }
+//func (h hp) Less(i, j int) bool { return h[i].dis < h[j].dis } // > 为最大堆
+//func (h hp) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+//func (h *hp) Push(v any)        { *h = append(*h, v.(pair)) }
+//func (h *hp) Pop() any          { a := *h; v := a[len(a)-1]; *h = a[:len(a)-1]; return v }
+//func countPaths(n int, roads [][]int) int {
+//	type edge struct{ to, wt int }
+//	g := make([][]edge, n)
+//	for _, e := range roads {
+//		x, y, wt := e[0], e[1], e[2]
+//		g[x] = append(g[x], edge{y, wt})
+//		g[y] = append(g[y], edge{x, wt})
+//	}
+//	const (
+//		mod int = 1e9 + 7
+//		inf int = 1e12 + 7
+//	)
+//	dist := make([]int, n)
+//	for i := 1; i < n; i++ {
+//		dist[i] = inf
+//	}
+//	f := make([]int, n)
+//	f[0] = 1 // 自己到自己只有一个
+//	h := hp{{}}
+//	for {
+//		p := heap.Pop(&h).(pair)
+//		x := p.x
+//		if x == n-1 {
+//			return f[n-1]
+//		}
+//		if p.dis > dist[x] {
+//			continue
+//		}
+//		for _, e := range g[x] {
+//			y := e.to
+//			newDis := p.dis + e.wt
+//			if newDis < dist[y] {
+//				dist[y] = newDis
+//				f[y] = f[x]
+//				heap.Push(&h, pair{newDis, y})
+//			} else if newDis == dist[y] {
+//				f[y] = (f[y] + f[x]) % mod
+//			}
+//		}
+//	}
+//}
 
-func (h hp) Len() int           { return len(h) }
-func (h hp) Less(i, j int) bool { return h[i].dis < h[j].dis } // > 为最大堆
-func (h hp) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
-func (h *hp) Push(v any)        { *h = append(*h, v.(pair)) }
-func (h *hp) Pop() any          { a := *h; v := a[len(a)-1]; *h = a[:len(a)-1]; return v }
-func countPaths(n int, roads [][]int) int {
-	type edge struct{ to, wt int }
-	g := make([][]edge, n)
-	for _, e := range roads {
-		x, y, wt := e[0], e[1], e[2]
-		g[x] = append(g[x], edge{y, wt})
-		g[y] = append(g[y], edge{x, wt})
+// 题目链接 https://leetcode.cn/problems/selling-pieces-of-wood/?envType=daily-question&envId=2024-03-15
+// 思路：分别枚举木块的高进行切割于宽进行切割，然后进行记忆化搜索，
+// 最后转化为dp即可，且注意还可以对枚举的大小枚举一半即可，以为i, n - i,全部枚举只是互换位置
+func sellingWood(m int, n int, prices [][]int) int64 {
+	//		dfs = func(i, j int) int { // 分别代表木块的高和宽
+	//			if memo[i][j] != -1{
+	//				return memo[i][j]
+	//			}
+	//			res := p[pair{i, j}]
+	//			defer func() { memo[i][j] = max(memo[i][j], res) }()
+	//			for l := 1; l < i; l++ {
+	//				res = max(res, dfs(l, j)+dfs(i - l, j))
+	//			}
+	//			for r := 1; r < j; r++ {
+	//				res = max(res, dfs(i, r)+dfs(i, j-r))
+	//			}
+	//			return res
+	//		}
+	// 上述注释部分就是记忆化搜索的过程
+	f := make([][]int, m+1)
+	for i := range f {
+		f[i] = make([]int, n+1)
 	}
-	const (
-		mod int = 1e9 + 7
-		inf int = 1e12 + 7
-	)
-	dist := make([]int, n)
-	for i := 1; i < n; i++ {
-		dist[i] = inf
+	for _, p := range prices {
+		f[p[0]][p[1]] = p[2]
 	}
-	f := make([]int, n)
-	f[0] = 1 // 自己到自己只有一个
-	h := hp{{}}
-	for {
-		p := heap.Pop(&h).(pair)
-		x := p.x
-		if x == n-1 {
-			return f[n-1]
-		}
-		if p.dis > dist[x] {
-			continue
-		}
-		for _, e := range g[x] {
-			y := e.to
-			newDis := p.dis + e.wt
-			if newDis < dist[y] {
-				dist[y] = newDis
-				f[y] = f[x]
-				heap.Push(&h, pair{newDis, y})
-			} else if newDis == dist[y] {
-				f[y] = (f[y] + f[x]) % mod
+	for i := 1; i <= m; i++ {
+		for j := 1; j <= n; j++ {
+			for k := 1; k <= i/2; k++ {
+				f[i][j] = max(f[i][j], f[k][j]+f[i-k][j])
+			}
+			for k := 1; k <= j/2; k++ {
+				f[i][j] = max(f[i][j], f[i][k]+f[i][j-k])
 			}
 		}
 	}
+	return int64(f[m][n])
 }

@@ -30,3 +30,5 @@
 **[go语言代码多参考于灵神的代码模板](https://github.com/EndlessCheng/codeforces-go)**
 ****
 **[还有一些模板参考于OI wiki](https://oi-wiki.org/ds/queue/)**
+****
+**[参考书籍：算法竞赛](http://www.tup.tsinghua.edu.cn/booksCenter/book_08808001.html)**
