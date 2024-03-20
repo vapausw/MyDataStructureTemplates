@@ -25,6 +25,12 @@
 **[线段树 segmentTree.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/segmentTree.go)**
 
 **[图论 graph.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/graph.go)**
+
+**[树上问题 tree.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/tree.go)**
+
+**[字符串问题 string.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/string.go)**
+
+**[动态规划问题 dp.go](https://github.com/vapausw/MyDataStructureTemplates/blob/test/dp.go)**
 ****
 ## 代码参考
 **[go语言代码多参考于灵神的代码模板](https://github.com/EndlessCheng/codeforces-go)**

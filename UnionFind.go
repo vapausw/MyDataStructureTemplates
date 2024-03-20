@@ -1,8 +1,12 @@
 package main
 
+// 也可将并查集修改为权值并查集，定义权值数组d即每个节点存储的是该节点到父节点的权值
+// 权值并查集根据具体问题进行修改，如求路径上的最大值，最小值，路径和等
+
 type UnionFind struct {
 	Fa     []int //每个节点的父节点坐标，初始化时将节点的父节点初始化为自己
 	Groups int   // 连通分量的个数
+	//d []int // 权值数组
 }
 
 func NewUnionFind(n int) UnionFind { // 将点从1开始
